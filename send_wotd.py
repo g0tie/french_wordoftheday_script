@@ -29,13 +29,15 @@ def read_db(dbId, headers):
 
 	
 def choose_random_word(data):
+    definition = ""
     lenght = len(data["results"]) - 1
     random_index = random.randint(0, lenght)
-
     word = data["results"][random_index]["properties"]["Mot"]["title"][0]["plain_text"]
-    definition = data["results"][random_index]["properties"]["Definition"]["rich_text"][0]["plain_text"]
+    definition_props = data["results"][random_index]["properties"]["Definition"]["rich_text"]
 
-    mot_du_jour = f"<h2>Le mot du jour est<h2> \n<strong>{word}</strong> : {definition}"
+    for prop in definition_props:
+        definition += prop["plain_text"]
+    mot_du_jour = f"<h2>Le mot du jour est</h2> \n<strong>{word}</strong> : {definition}"
 
     return mot_du_jour
 
@@ -53,6 +55,6 @@ def send_email(subject, body, sender, recipients, password):
 
 data = read_db(databaseId, headers)
 word = choose_random_word(data)
-recipients = [os.getenv("ADDRESS1")]
+recipients = [os.getenv("ADDRESS1"), os.getenv("ADDRESS2")]
 
 send_email("Le mot du jour", word, os.getenv("SENDER"), recipients, os.getenv("MAILAPPPASS") )
